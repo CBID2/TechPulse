@@ -95,6 +95,7 @@ span {
   width: 100%;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .card-button a {
@@ -107,10 +108,15 @@ span {
   color: var(--primary-delete-color);
 }
 
+.removing {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
 form {
   display: grid;
   place-items: center;
-
 }
 
 
