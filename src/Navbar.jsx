@@ -31,6 +31,7 @@ const Navbar = () => {
           <Link to="#">Politics</Link>
           <Link to="#">Sports</Link>
           <Link to="#">Technology</Link>
+          <Link to="/bookmarks" className="bookmark-link">Bookmarks</Link> 
         </div>
       )}
     </nav>
