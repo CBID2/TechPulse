@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "./Navbar.css";
 
 const Navbar = () => {
@@ -7,30 +8,21 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="nav-container">
-        <a href="#" className="logo">TechPulse</a>
+        <Link to="/" className="logo">TechPulse</Link>
 
-        <div className="nav-links">
-          <a href="#">Home</a>
-          <a href="#">World</a>
-          <a href="#">Politics</a>
-          <a href="#">Sports</a>
-          <a href="#">Technology</a>
+        <div className={`nav-links ${isOpen ? "open" : ""}`}>
+          <Link to="/" onClick={() => setIsOpen(false)}>Home</Link>
+          <Link to="#" onClick={() => setIsOpen(false)}>World</Link>
+          <Link to="#" onClick={() => setIsOpen(false)}>Politics</Link>
+          <Link to="#" onClick={() => setIsOpen(false)}>Sports</Link>
+          <Link to="#" onClick={() => setIsOpen(false)}>Technology</Link>
+          <Link to="/bookmarks" className="bookmark-link" onClick={() => setIsOpen(false)}>Bookmarks</Link> 
         </div>
 
         <button className="menu-button" onClick={() => setIsOpen(!isOpen)}>
-          ☰
+          {isOpen ? "✖" : "☰"}
         </button>
       </div>
-
-      {isOpen && (
-        <div className="mobile-menu">
-          <a href="#">Home</a>
-          <a href="#">World</a>
-          <a href="#">Politics</a>
-          <a href="#">Sports</a>
-          <a href="#">Technology</a>
-        </div>
-      )}
     </nav>
   );
 };

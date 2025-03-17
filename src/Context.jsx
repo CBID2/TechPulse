@@ -16,6 +16,7 @@ const AppContext = React.createContext();
 const AppProvider = ({ children }) => {
     const [state,dispatch]=useReducer(reducer,initialState);
     const [showPopularNews, setShowPopularNews] = useState(false);
+    const [bookMark, setBookMark] = useState([]);
    
 
     const fetchApiData= async (url)=>{
@@ -74,6 +75,12 @@ const AppProvider = ({ children }) => {
         })
     }
 
+    const addBookMark = (news) => {
+        const newBookMark = [...bookMark, news];
+        setBookMark(newBookMark);
+        localStorage.setItem('bookmarks', JSON.stringify(newBookMark));
+    }
+
     useEffect(()=>{
         fetchApiData(`${API}query=${state.query}&{state.page}`);
     },[state.query,state.page]);
@@ -82,9 +89,16 @@ const AppProvider = ({ children }) => {
         fetchPopularNews(); 
     }, []);
 
+    useEffect(() => {
+        let storedData = localStorage.getItem('bookmarks')
+        if(storedData){
+            setBookMark(JSON.parse(storedData))
+        }
+    },[])
+
     
     return (
-        <AppContext.Provider value={{...state,searchFn,getNextPage,getPrevPage,showPopularNews,setShowPopularNews}}>
+        <AppContext.Provider value={{...state,searchFn,getNextPage,getPrevPage,showPopularNews,setShowPopularNews,addBookMark,bookMark,setBookMark}}>
             {children}
         </AppContext.Provider>
     );
