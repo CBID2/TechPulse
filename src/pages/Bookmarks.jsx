@@ -1,9 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useGlobalContext } from "../Context";
 
 const Bookmarks = () => {
   const { bookMark, setBookMark } = useGlobalContext();
   const [removingId, setRemovingId] = useState(null);
+
+  const removeBookmark = useCallback((news) => {
+    setRemovingId(news.objectID);
+
+    setTimeout(() => {
+      const updatedBookmarks = bookMark.filter(
+        (item) => item.objectID !== news.objectID
+      );
+      setBookMark(updatedBookmarks);
+      localStorage.setItem("bookmarks", JSON.stringify(updatedBookmarks));
+      setRemovingId(null);
+    }, 300);
+  }, [bookMark, setBookMark]);
 
   if (!bookMark.length) {
     return (
@@ -13,26 +26,16 @@ const Bookmarks = () => {
     );
   }
 
-  const removeBookmark = (news) => {
-    setRemovingId(news.objectID); 
-
-    setTimeout(() => {
-      const updatedBookmarks = bookMark.filter(
-        (item) => item.objectID !== news.objectID
-      );
-      setBookMark(updatedBookmarks);
-      localStorage.setItem("bookmarks", JSON.stringify(updatedBookmarks));
-    }, 300); 
-  };
-
   return (
     <>
       <div className="stories-div" style={{ paddingTop: "3rem" }}>
         {bookMark.map((curPost) => {
           const { title, author, objectID, url, num_comments } = curPost;
+          const isRemoving = removingId === objectID;
+
           return (
             <div
-              className={`card ${removingId === objectID ? "removing" : ""}`}
+              className={`card ${isRemoving ? "removing" : ""}`}
               key={objectID}
             >
               <h2>{title}</h2>
