@@ -43,7 +43,20 @@ Check out the deployed version: [TechPulse on Vercel](https://techpulse-devleo.v
 
 ## 🫱🏼‍🫲🏼Contributing
 
-Contributions are welcome! Feel free to fork the repository and submit pull requests.
+Contributions are welcome! Feel free to fork the repository and submit pull requests. Here's a step-by-step guide to contribute:
+
+Step 1: Fork the Repository
+Fork the TechPulse repository by clicking the "Fork" button on the top-right corner of the repository page.
+
+Step 2: Clone the Forked Repository
+Clone the forked repository to your local machine using:
+
+bash
+git clone https://github.com/your-username/TechPulse.git
+
+Replace your-username with your actual GitHub username.
+
+Step 3: Create a New Bran
 
 ## 📜License
 
