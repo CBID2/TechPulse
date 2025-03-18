@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy,Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Navbar from "./Navbar.jsx";
-import Home from './pages/Home.jsx';
-import Bookmarks from "./pages/Bookmarks";
+const Home = lazy(() => import('./pages/Home.jsx'));
+const Navbar = lazy(() => import('./Navbar.jsx'));
+const Bookmarks = lazy(() => import('./pages/Bookmarks.jsx'));
+const Loader = lazy(() => import('./components/Loader.jsx'));
 
 export const App = () => {
   const [theme, setTheme] = useState('light');
@@ -19,7 +20,7 @@ export const App = () => {
 
   return (
     <Router>
-      <>
+      <Suspense fallback={<Loader />}>
         {/* Navbar */}
         <Navbar />
 
@@ -51,7 +52,7 @@ export const App = () => {
           <Route path="/bookmarks" element={<Bookmarks />} />
         </Routes>
 
-      </>
+      </Suspense>
     </Router>
   );
 }
