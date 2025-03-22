@@ -1,18 +1,20 @@
-import React from 'react';
-import Search from '../Search';
-import Stories from '../Stories';
-import Pagination from '../Pagination';
-import PopularNews from '../PopularNews';
+import React,{lazy, Suspense} from 'react';
 import { useGlobalContext } from '../Context';
 
 import '../App.css';
 import "../Navbar.css";
+import Loader from '../components/Loader';
+
+const Search = lazy(()=>import('../Search'));
+const Stories = lazy(()=>import('../Stories'));
+const Pagination = lazy(()=>import('../Pagination'));
+const PopularNews = lazy(()=>import('../PopularNews'));
 
 export const Home = () => {
   const { showPopularNews } = useGlobalContext();
 
   return (
-    <>
+    <Suspense fallback={<Loader />}>
       {/* Search bar */}
       <Search />
 
@@ -21,7 +23,7 @@ export const Home = () => {
 
       {/* News sections */}
       {showPopularNews ? <PopularNews /> : <Stories />}
-    </>
+    </Suspense>
   );
 }
 

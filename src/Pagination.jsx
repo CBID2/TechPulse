@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { useGlobalContext } from './Context';
 
 const Pagination = () => {
@@ -59,4 +59,4 @@ const Pagination = () => {
   );
 };
 
-export default Pagination;
+export default memo(Pagination);
