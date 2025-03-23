@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from './Navbar'
 import Bookmarks from './pages/Bookmarks.jsx';
 import Loader from './components/Loader';
+import NotFound from './components/NotFound.jsx';
+import './App.css';
 
 const Home = lazy(() => import('./pages/Home.jsx'));
 
@@ -53,6 +55,7 @@ export const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/bookmarks" element={<Bookmarks />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
 
       </Suspense>
