@@ -1,0 +1,36 @@
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; 
+  background: var(--primary-bg);
+  color: var(--primary-text-color);
+  font-family: "Inter", sans-serif;
+  transition: background 0.3s ease-in-out;
+}
+
+.spinner {
+  width: 64px;
+  height: 64px;
+  border: 6px solid var(--primary-cardbg-color);  
+  border-left-color: var(--primary-button-bg);       
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+p {
+  font-size: 18px;
+  color: var(--primary-font-color); 
+  margin-top: 0.5rem;
+}

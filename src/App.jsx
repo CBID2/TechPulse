@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy,Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Navbar from "./Navbar.jsx";
-import Home from './pages/Home.jsx';
-import Bookmarks from "./pages/Bookmarks";
+import Navbar from './Navbar'
+import Bookmarks from './pages/Bookmarks.jsx';
+import Loader from './components/Loader';
+
+const Home = lazy(() => import('./pages/Home.jsx'));
 
 export const App = () => {
   const [theme, setTheme] = useState('light');
@@ -19,12 +21,14 @@ export const App = () => {
 
   return (
     <Router>
-      <>
+      <Navbar />
+      <Suspense fallback={<Loader />}>
         {/* Navbar */}
-        <Navbar />
 
         {/* Theme toggle button */}
-        <button className="theme-switch" onClick={handleClick}>
+        <button className="theme-switch" onClick={handleClick} aria-label="Toggle Theme"
+          aria-pressed={theme === 'dark'} aria-labelledby="theme-switch-label"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             height="40px"
@@ -51,7 +55,7 @@ export const App = () => {
           <Route path="/bookmarks" element={<Bookmarks />} />
         </Routes>
 
-      </>
+      </Suspense>
     </Router>
   );
 }

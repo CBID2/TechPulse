@@ -1,113 +1,124 @@
-import React, { useEffect,useContext,useReducer, useState } from 'react';
+import React, { useEffect, useContext, useReducer, useState, useCallback, useMemo } from 'react';
+import useSWR from 'swr';  
 import reducer from './reducer';
- // Context created
-let API="https://hn.algolia.com/api/v1/search?";
+// Base API endpoint
+const API = "https://hn.algolia.com/api/v1/search?";
 
-const initialState =  {
-    isLoading:true,
-    query:" ",
-    nbPages:0,
-    page:0,
-    hits:[],
-    popularNews:[],
+// Initial state
+const initialState = {
+    isLoading: true,
+    query: " ",
+    nbPages: 0,
+    page: 0,
+    hits: [],
+    popularNews: [],
 };
 const AppContext = React.createContext();
-// Now the provider function
+
+// Fetcher function for SWR caching
+const fetcher = (url) => fetch(url).then(res => res.json());
+
 const AppProvider = ({ children }) => {
-    const [state,dispatch]=useReducer(reducer,initialState);
+    const [state, dispatch] = useReducer(reducer, initialState);
     const [showPopularNews, setShowPopularNews] = useState(false);
     const [bookMark, setBookMark] = useState([]);
-   
 
-    const fetchApiData= async (url)=>{
+    // API fetching with caching
+    const { data, error } = useSWR(`${API}query=${state.query}&page=${state.page}`, fetcher);
 
-        dispatch({type:"SET_LOADING"});
-        try{
-            const res= await fetch(url);
-            const data = await res.json();
-            console.log(data);
-            dispatch({type:"GET_STORIES",
-                payload:{
-                    hits:data.hits,
-                    nbPages:data.nbPages,
+    // Handle API response
+    useEffect(() => {
+        if (data) {
+            dispatch({
+                type: "GET_STORIES",
+                payload: {
+                    hits: data.hits,
+                    nbPages: data.nbPages,
                 }
-            })
-           
-       }
-       catch(error){
-             console.log(error);
-          }
-    };
-    const fetchPopularNews = async () => {
-        try {
-            dispatch({type:"SET_LOADING"});
-            const res = await fetch(`${API}query=technology&tags=story`);
-            const data = await res.json();
+            });
+        }
+        if (error) {
+            console.error("Error fetching data:", error);
+        }
+    }, [data, error]);
 
-            const sortedNews = data.hits
-                .filter((item) => item.num_comments) 
-                .sort((a, b) => (b.num_comments || 0) - (a.num_comments || 0));
+    // Fetch popular news separately with SWR
+    const { data: popularData, error: popularError } = useSWR(`${API}query=technology&tags=story`, fetcher);
+
+    useEffect(() => {
+        if (popularData) {
+            const sortedNews = popularData.hits
+                .filter((item) => item.num_comments)
+                .sort((a, b) => (b.num_comments || 0) - (a.num_comments || 0))
+                .slice(0, 7);
 
             dispatch({
                 type: "GET_POPULAR_NEWS",
-                payload: sortedNews.slice(0, 7),
+                payload: sortedNews,
             });
-
-        } catch (error) {
-            console.log(error);
         }
-    };
+    }, [popularData, popularError]);
 
-     
-    const searchFn= (searchQuery) =>{
-        dispatch({type:"SEARCH_QUERY",
-            payload:searchQuery,
-        });
-    };
-    const getNextPage=()=>{
-        dispatch({
-           type:"NEXT_PAGE", 
-        })
-    }
-    const getPrevPage=()=>{
-        dispatch({
-           type:"PREV_PAGE", 
-        })
-    }
+    // Efficient pagination handlers
+    const getNextPage = useCallback(() => {
+        dispatch({ type: "NEXT_PAGE" });
+    }, []);
 
-    const addBookMark = (news) => {
+    const getPrevPage = useCallback(() => {
+        dispatch({ type: "PREV_PAGE" });
+    }, []);
+
+    // Memoized bookmark management
+    const addBookMark = useCallback((news) => {
         const newBookMark = [...bookMark, news];
         setBookMark(newBookMark);
         localStorage.setItem('bookmarks', JSON.stringify(newBookMark));
-    }
+    }, [bookMark]);
 
-    useEffect(()=>{
-        fetchApiData(`${API}query=${state.query}&{state.page}`);
-    },[state.query,state.page]);
+    // Remove bookmark function
+    const removeBookMark = useCallback((news) => {
+        const updatedBookmarks = bookMark.filter((item) => item.objectID !== news.objectID);
+        setBookMark(updatedBookmarks);
+        localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
+    }, [bookMark]);
 
+    // Load bookmarks from localStorage on initial render
     useEffect(() => {
-        fetchPopularNews(); 
+        const storedData = localStorage.getItem('bookmarks');
+        if (storedData) {
+            setBookMark(JSON.parse(storedData));
+        }
     }, []);
 
-    useEffect(() => {
-        let storedData = localStorage.getItem('bookmarks')
-        if(storedData){
-            setBookMark(JSON.parse(storedData))
-        }
-    },[])
+    // Memoize values for better performance
+    const value = useMemo(() => ({
+        ...state,
+        searchFn: (query) => dispatch({ type: "SEARCH_QUERY", payload: query }),
+        getNextPage,
+        getPrevPage,
+        showPopularNews,
+        setShowPopularNews,
+        addBookMark,
+        removeBookMark,
+        bookMark,
+        setBookMark,
+    }), [state, showPopularNews, bookMark, addBookMark, removeBookMark]);
 
-    
+    // Display error fallback
+    if (error || popularError) {
+        return <h1>Error loading data. Please try again later.</h1>;
+    }
+
     return (
-        <AppContext.Provider value={{...state,searchFn,getNextPage,getPrevPage,showPopularNews,setShowPopularNews,addBookMark,bookMark,setBookMark}}>
+        <AppContext.Provider value={value}>
             {children}
         </AppContext.Provider>
     );
 };
 
-
-const useGlobalContext =()=>
-{
+// Custom hook for accessing context
+const useGlobalContext = () => {
     return useContext(AppContext);
 };
 
-export { AppContext, AppProvider,useGlobalContext  };
+export { AppContext, AppProvider, useGlobalContext };
