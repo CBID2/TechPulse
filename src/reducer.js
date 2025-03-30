@@ -43,6 +43,11 @@ const reducer = (state, action) => {
                 ...state,
                 page: prevPage,
             };
+        case "TOGGLE_READING_MODE":
+            return { ...state, readingMode: action.payload };
+
+        case "SET_FONT_SIZE":
+            return { ...state, fontSize: action.payload };
         default:
             return state;
     }
