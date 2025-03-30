@@ -2,7 +2,7 @@ import React from 'react';
 import { useGlobalContext } from './Context';
 
 const PopularNews = () => {
-    const { isLoading, popularNews } = useGlobalContext();
+    const { isLoading, popularNews, fontSize, readingMode } = useGlobalContext();
 
     if (isLoading) {
         return <p>Loading popular news...</p>;
@@ -15,10 +15,18 @@ const PopularNews = () => {
                 <ul>
                     {popularNews.map((news) => (
                         <li key={news.objectID} className="news-item">
-                            <a href={news.url} target="_blank" rel="noopener noreferrer">
+                            <a href={news.url} target="_blank" rel="noopener noreferrer"
+                                style={{
+                                    fontSize: readingMode === true ? `${fontSize}px` : "",
+                                }}
+                            >
                                 {news.title}
                             </a>
-                            <span className="badge">💬 {news.num_comments || 0} comments</span>
+                            <span className="badge"
+                                style={{
+                                    fontSize: readingMode === true ? `${fontSize}px` : "",
+                                }}
+                            >💬 {news.num_comments || 0} comments</span>
                         </li>
                     ))}
                 </ul>
