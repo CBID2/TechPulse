@@ -12,6 +12,8 @@ const initialState = {
     page: 0,
     hits: [],
     popularNews: [],
+    readingMode: localStorage.getItem("readingMode") === "true",  
+    fontSize: parseInt(localStorage.getItem("fontSize")) || 16,  
 };
 const AppContext = React.createContext();
 
@@ -90,6 +92,16 @@ const AppProvider = ({ children }) => {
         }
     }, []);
 
+    const setReadingMode = (mode) => {
+        dispatch({ type: "TOGGLE_READING_MODE", payload: mode });
+        localStorage.setItem("readingMode", mode);
+    };
+
+    const setFontSize = (size) => {
+        dispatch({ type: "SET_FONT_SIZE", payload: size });
+        localStorage.setItem("fontSize", size);
+    };
+
     // Memoize values for better performance
     const value = useMemo(() => ({
         ...state,
@@ -102,7 +114,10 @@ const AppProvider = ({ children }) => {
         removeBookMark,
         bookMark,
         setBookMark,
-    }), [state, showPopularNews, bookMark, addBookMark, removeBookMark]);
+        setReadingMode,
+        setFontSize,
+    }), [state, getNextPage, getPrevPage, showPopularNews, addBookMark, removeBookMark, bookMark]);
+
 
     // Display error fallback
     if (error || popularError) {
